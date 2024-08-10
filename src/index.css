@@ -1,0 +1,17 @@
+:root {
+  background: whitesmoke;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+.container {
+  font-size: 3rem;
+  margin: auto;
+  max-width: 800px;
+  margin-top: 20px;
+}
+
+.error {
+  font-size: small;
+  color: red;
+  padding-left: 16px;
+  font-weight: 400;
+}
