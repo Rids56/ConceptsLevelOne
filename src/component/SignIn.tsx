@@ -3,8 +3,9 @@ import { Avatar, Box, Button, Container, Grid, Link, TextField, Typography } fro
 import { SubmitHandler, useForm } from "react-hook-form"
 import Joi from "joi"
 import { joiResolver } from "@hookform/resolvers/joi"
-import { useAppSelector } from "../redux/hooks"
+import { useAppDispatch, useAppSelector } from "../redux/hooks"
 import { useNavigate } from "react-router-dom"
+import { getOneUser } from "../redux/Slices/User/userSlice"
 
 type FormData = {
   userName: string,
@@ -25,19 +26,28 @@ const schema = Joi.object({
 })
 
 const SignIn = () => {
+  const dispatch = useAppDispatch();
+  // const registerUser = useAppSelector((state) => state.user.users);
+  const validUser = JSON.parse(sessionStorage.getItem('token') || '[]');
   const navigate = useNavigate();
-  const registerUser = useAppSelector((state) => state.user.users);
+ 
   const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<FormData>({
     resolver: joiResolver(schema),
   });
 
-  console.log('registerUser login', registerUser);
+  // console.log('registerUser login', registerUser);
   // console.log('sunmitted data', errors);
   // console.log('Watch on specific var', watch('userName'));  
 
   const handleFormSubmit: SubmitHandler<FormData> = (data: FormData) => {
-    console.log('submitted data', data);
-    navigate('/dashboard');
+    // console.log('submitted data', data);
+    dispatch(getOneUser(data));
+
+    if(validUser) {
+      console.log('login dispatched data', validUser);
+    }
+
+    // navigate('/dashboard');
     reset();
   }
 

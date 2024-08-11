@@ -34,12 +34,13 @@ const schema = Joi.object({
 const Register = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  
   const { register, watch, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: joiResolver(schema),
   });
 
   const handleRegister: SubmitHandler<FormData> = (data: FormData) => {
-    console.log('register data', data);
+    // console.log('register data', data);
     const newUser: FormData = data;
     dispatch(addUser(newUser));
 
