@@ -3,6 +3,8 @@ import { Avatar, Box, Button, Container, Grid, Link, TextField, Typography } fro
 import { SubmitHandler, useForm } from "react-hook-form"
 import Joi from "joi"
 import { joiResolver } from "@hookform/resolvers/joi"
+import { useAppSelector } from "../redux/hooks"
+import { useNavigate } from "react-router-dom"
 
 type FormData = {
   userName: string,
@@ -23,15 +25,19 @@ const schema = Joi.object({
 })
 
 const SignIn = () => {
+  const navigate = useNavigate();
+  const registerUser = useAppSelector((state) => state.user.users);
   const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<FormData>({
     resolver: joiResolver(schema),
   });
 
+  console.log('registerUser login', registerUser);
   // console.log('sunmitted data', errors);
   // console.log('Watch on specific var', watch('userName'));  
 
   const handleFormSubmit: SubmitHandler<FormData> = (data: FormData) => {
     console.log('submitted data', data);
+    navigate('/dashboard');
     reset();
   }
 

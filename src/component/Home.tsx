@@ -5,8 +5,7 @@ const Home = () => {
   return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
-          <Navbar />
-          <Home />
+          <div>Dashboard Page</div>          
       </Box>
     </Container>
   )
