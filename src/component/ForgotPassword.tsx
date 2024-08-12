@@ -8,6 +8,7 @@ import { updateUser } from '../redux/Slices/User/userSlice'
 import { isEmpty } from 'lodash'
 import OpenNotification, { AlertSeverity } from './OpenNotification'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 type FormData = {
     userName: string,
@@ -45,6 +46,7 @@ const schema = Joi.object({
 })
 
 const ForgotPassword = () => {
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const existingUsers = useAppSelector((state) => state.user.users);
     const [notification, setNotification] = useState<{ type: AlertSeverity; visible: boolean; msg: string; }>({ type: 'info', visible: false, msg: '' });
@@ -63,6 +65,7 @@ const ForgotPassword = () => {
         const userAvailable = existingUsers?.find((e) => e.userName === data.userName) || [];
         if (!isEmpty(userAvailable)) {
             dispatch(updateUser({ userName: data.userName, password: data.newPassword }));
+            navigate('/')
         } else {
             return showNotification('error', 'User not exist with this Username')
         }

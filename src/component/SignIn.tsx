@@ -50,13 +50,12 @@ const SignIn = () => {
     // console.log('submitted data', data);
     dispatch(getOneUser(data));
 
-    const validUser = JSON.parse(sessionStorage.getItem('token') || '[]');
+    const validUser = sessionStorage.getItem('token');
     const users = JSON.parse(sessionStorage.getItem('users') || '[]');
     // console.log('login dispatched data outer', validUser);
 
     if (!isEmpty(validUser)) {
       // console.log('login dispatched success', validUser);
-      reset()
       navigate('/dashboard')
     } else if (isEmpty(validUser) && isEmpty(users)) {
       return showNotification('error', 'No user found, Create new account')
