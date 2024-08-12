@@ -3,13 +3,24 @@ import { LockResetRounded } from '@mui/icons-material'
 import { Avatar, Box, Button, Container, Grid, Link, TextField, Typography } from '@mui/material'
 import Joi from 'joi'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { updateUser } from '../redux/Slices/User/userSlice'
+import { isEmpty } from 'lodash'
+import OpenNotification, { AlertSeverity } from './OpenNotification'
+import { useState } from 'react'
 
 type FormData = {
+    userName: string,
     newPassword: string,
     confirmPassword: string,
 }
 
 const schema = Joi.object({
+    userName: Joi.string().min(3).max(30).required().messages({
+        'string.empty': 'Username is required',
+        'string.min': 'Username should have at least 3 characters',
+        'string.max': 'Username should have at most 30 characters',
+    }),
     newPassword: Joi.string().min(6).required().messages({
         'string.empty': 'Password is required',
         'string.min': 'Password should have at least 6 characters',
@@ -34,6 +45,14 @@ const schema = Joi.object({
 })
 
 const ForgotPassword = () => {
+    const dispatch = useAppDispatch();
+    const existingUsers = useAppSelector((state) => state.user.users);
+    const [notification, setNotification] = useState<{ type: AlertSeverity; visible: boolean; msg: string; }>({ type: 'info', visible: false, msg: '' });
+
+    const showNotification = (type: AlertSeverity, message: string) => {
+        setNotification({ type, visible: true, msg: message });
+    };
+
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<FormData>({
         resolver: joiResolver(schema),
     });
@@ -41,7 +60,12 @@ const ForgotPassword = () => {
     // console.log('sunmitted error', errors);
 
     const handleConfirmPassword: SubmitHandler<FormData> = (data: FormData) => {
-        console.log('Confirm data', data);
+        const userAvailable = existingUsers?.find((e) => e.userName === data.userName) || [];
+        if (!isEmpty(userAvailable)) {
+            dispatch(updateUser({ userName: data.userName, password: data.newPassword }));
+        } else {
+            return showNotification('error', 'User not exist with this Username')
+        }
         reset();
     }
     return (
@@ -69,12 +93,26 @@ const ForgotPassword = () => {
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <TextField
+                                    // autoComplete="given-name"
+                                    // name="userName"
+                                    required
+                                    fullWidth
+                                    id="userName"
+                                    label="User Name"
+                                    autoFocus
+                                    {...register("userName")}
+                                />
+                            </Grid>
+                            {errors.userName && errors.userName?.message &&
+                                (<span className="error">{errors.userName?.message}</span>)
+                            }
+                            <Grid item xs={12}>
+                                <TextField
                                     required
                                     fullWidth
                                     label="New Password"
                                     type="NewPassword"
                                     id="NewPassword"
-                                    autoFocus
                                     {...register('newPassword')}
                                 />
                             </Grid>
@@ -129,6 +167,12 @@ const ForgotPassword = () => {
                     </Box>
                 </Box>
             </Container>
+            <OpenNotification
+                severity={notification.type}
+                visible={notification.visible}
+                msg={notification.msg}
+                onClose={() => setNotification({ visible: false, msg: '', type: 'info' })}
+            />
         </div>
     )
 }

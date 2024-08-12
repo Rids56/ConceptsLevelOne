@@ -6,6 +6,9 @@ import { joiResolver } from "@hookform/resolvers/joi"
 import { useAppDispatch, useAppSelector } from "../redux/hooks"
 import { useNavigate } from "react-router-dom"
 import { getOneUser } from "../redux/Slices/User/userSlice"
+import { isEmpty } from "lodash"
+import OpenNotification, { AlertSeverity } from "./OpenNotification"
+import { useState } from "react"
 
 type FormData = {
   userName: string,
@@ -28,9 +31,13 @@ const schema = Joi.object({
 const SignIn = () => {
   const dispatch = useAppDispatch();
   // const registerUser = useAppSelector((state) => state.user.users);
-  const validUser = JSON.parse(sessionStorage.getItem('token') || '[]');
   const navigate = useNavigate();
- 
+  const [notification, setNotification] = useState<{ type: AlertSeverity; visible: boolean; msg: string; }>({ type: 'info', visible: false, msg: '' });
+
+  const showNotification = (type: AlertSeverity, message: string) => {
+    setNotification({ type, visible: true, msg: message });
+  };
+
   const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<FormData>({
     resolver: joiResolver(schema),
   });
@@ -43,11 +50,20 @@ const SignIn = () => {
     // console.log('submitted data', data);
     dispatch(getOneUser(data));
 
-    if(validUser) {
-      console.log('login dispatched data', validUser);
-    }
+    const validUser = JSON.parse(sessionStorage.getItem('token') || '[]');
+    const users = JSON.parse(sessionStorage.getItem('users') || '[]');
+    // console.log('login dispatched data outer', validUser);
 
-    // navigate('/dashboard');
+    if (!isEmpty(validUser)) {
+      // console.log('login dispatched success', validUser);
+      reset()
+      navigate('/dashboard')
+    } else if (isEmpty(validUser) && isEmpty(users)) {
+      return showNotification('error', 'No user found, Create new account')
+    }
+    else {
+      return showNotification('error', 'Invalid User')
+    }
     reset();
   }
 
@@ -145,6 +161,12 @@ const SignIn = () => {
           </Box>
         </Box>
       </Container>
+      <OpenNotification
+        severity={notification.type}
+        visible={notification.visible}
+        msg={notification.msg}
+        onClose={() => setNotification({ visible: false, msg: '', type: 'info' })}
+      />
     </div>
   )
 }

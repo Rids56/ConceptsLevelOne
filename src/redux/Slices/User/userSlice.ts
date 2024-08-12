@@ -1,10 +1,10 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, current, nanoid, PayloadAction } from "@reduxjs/toolkit";
 
 //types of user contains values
 export interface User {
     id?: number,
     fullName?: string,
-    userName: string,
+    userName?: string,
     password: string,
 }
 
@@ -23,7 +23,7 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         addUser: (state, action: PayloadAction<User>) => {
-            state.users.push({
+            state.users?.push({
                 id: state.users.length,
                 fullName: action.payload.fullName,
                 userName: action.payload.userName,
@@ -32,11 +32,17 @@ export const userSlice = createSlice({
         },
         getOneUser: (state, action: PayloadAction<User>) => {
             const authUser = state.users?.find((e) => (e.userName === action.payload.userName && e.password === action.payload.password));
-            
             if (authUser) {
-                sessionStorage.setItem('token', JSON.stringify(authUser));
+                sessionStorage.setItem('token', nanoid());
             } else {
                 sessionStorage.removeItem('token');
+            }
+        },
+        updateUser: (state, action: PayloadAction<User>) => {
+            const { userName, ...changes } = action.payload;
+            const index = state.users.findIndex((user) => user.userName === action.payload.userName);
+            if (index !== -1) {
+                state.users[index] = { ...state.users[index], ...changes };
             }
         }
     }
@@ -46,4 +52,4 @@ export const userSlice = createSlice({
 export default userSlice.reducer;
 
 //export actions of slice
-export const { addUser, getOneUser } = userSlice.actions;
+export const { addUser, getOneUser, updateUser } = userSlice.actions;
