@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FoundationIcon from '@mui/icons-material/Foundation';
 
 const pages = ['Users'];
-const settings = ['Account','Logout'];
+const settings = ['Account', 'Logout'];
 
 const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -36,8 +36,8 @@ const Navbar = () => {
 
   return (
     <>
-      <AppBar position="static">
-        <Container maxWidth="xl">
+      <Box>
+        <AppBar position="static" sx={{ px: 2}} >
           <Toolbar disableGutters>
             <FoundationIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
             <Typography
@@ -100,8 +100,8 @@ const Navbar = () => {
               </Menu>
             </Box>
           </Toolbar>
-        </Container>
-      </AppBar>
+        </AppBar>
+      </Box>
     </>
   )
 }
