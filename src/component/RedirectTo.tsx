@@ -2,7 +2,11 @@ import ForgotPassword from './ForgotPassword';
 import Home from './Home';
 import Register from './Register';
 import SignIn from './SignIn';
-import { UserList } from './User/UserList';
+import { Dashboard } from '.';
+import { UserList } from './Masters/User/UserList';
+import { CountryList } from './Masters/Country/CountryList';
+import { CityList } from './Masters/City.tsx/CityList';
+import { StateList } from './Masters/State/StateList';
 
 export const RedirectTo = [
     {
@@ -10,19 +14,23 @@ export const RedirectTo = [
         element: <SignIn />
     },
     {
-        path: '/dashboard',
-        element: <Home />,        
-    },
-    {
         path: '/register',
-        element: <Register />,        
+        element: <Register />,
     },
     {
         path: '/forgotPass',
-        element: <ForgotPassword />,        
+        element: <ForgotPassword />,
     },
     {
-        path: '/users',
-        element: <UserList />,
-    }
+        path: '/dashboard',
+        element: <Home />,
+        children: [
+            { path: '/dashboard', element: <Dashboard /> },
+            { path: '/dashboard/users', element: <UserList /> },
+            { path: '/dashboard/countries', element: <CountryList /> },
+            { path: '/dashboard/states', element: <StateList /> },
+            { path: '/dashboard/cities', element: <CityList /> },
+        ],
+    },
+
 ];
