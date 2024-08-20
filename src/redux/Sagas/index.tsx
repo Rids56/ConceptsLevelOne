@@ -1,9 +1,10 @@
-import React from 'react'
+import { all } from 'redux-saga/effects';
 
-type Props = {}
+function* rootSaga() {
+  yield all([
+    // ...imported sagas go here
 
-const index = (props: Props) => {
-  return (
-    <div>index</div>
-  )
+  ]);
 }
+
+export default rootSaga;

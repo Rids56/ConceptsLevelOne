@@ -21,8 +21,8 @@ const TableList = <T extends object>({ columns, data }: TableListProps<T>) => {
   return (
     <table {...getTableProps()} className='tableContainer'>
       <thead>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+        {headerGroups.map((headerGroup, headerGroupIndex) => (
+          <tr {...headerGroup.getHeaderGroupProps()} key={headerGroupIndex}>
             {headerGroup.headers.map(column => (
               <th
                 {...column.getHeaderProps()}

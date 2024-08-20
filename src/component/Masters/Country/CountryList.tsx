@@ -1,9 +1,31 @@
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
+import { getToken } from '../../../assets/CommonApi/countryToken';
+import { getCountries } from '../../../assets/CommonApi/commonapi';
 
-type Props = {}
+const CountryList: React.FC = () => {
+  // const fetchCountryList = (async () => {
+  //   const data = await getCountries();
+  //   console.log('list', data);
+  // });
 
-export const CountryList = (props: Props) => {
+  const fetchToken = (async () => {
+    const token = await getToken();
+    if (token) {
+      sessionStorage.setItem('apitoken', (token?.auth_token));
+    }
+  })
+
+  useEffect(() => {
+    const getApiToken = sessionStorage.getItem('apitoken');
+    if (!getApiToken) {
+      fetchToken();
+    }
+    // fetchCountryList();
+  }, [])
+
   return (
     <div>CountryList</div>
   )
 }
+
+export default CountryList;

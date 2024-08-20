@@ -11,47 +11,51 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import FoundationIcon from '@mui/icons-material/Foundation';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../redux/hooks';
+import { logoutUser } from '../redux/Slices/User/userSlice';
 
 const pages = [
-  {page: 'Home', linkTo: '/dashboard'},
-  {page: 'Users', linkTo: '/dashboard/users'},
-  {page: 'Country', linkTo: '/dashboard/countries'},
-  {page: 'State', linkTo: '/dashboard/states'},
-  {page: 'City', linkTo: '/dashboard/cities'},
+  { page: 'Home', linkTo: '/dashboard' },
+  { page: 'Users', linkTo: '/dashboard/users' },
+  { page: 'Country', linkTo: '/dashboard/countries' },
+  { page: 'State', linkTo: '/dashboard/states' },
+  { page: 'City', linkTo: '/dashboard/cities' },
 ];
-const settings = ['Account', 'Logout'];
+const settings = [
+  { setting: 'Account', linkTo: '/dashboard' },
+  { setting: 'Logout', linkTo: '/' },
+];
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const dispatch = useAppDispatch();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  // const handleCloseNavMenu = () => {
-  //   setAnchorElNav(null);
-  // };
-
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = (event: React.MouseEvent<HTMLElement>, value?: { setting: string, linkTo: string }) => {
+    if (value?.linkTo && value?.setting === 'Logout') {
+      dispatch(logoutUser());
+      navigate(value.linkTo);
+    } else if (value?.linkTo) {
+      navigate(value?.linkTo);
+    }
     setAnchorElUser(null);
   };
 
   return (
     <>
       <Box>
-        <AppBar position="static" sx={{ px: 2}} >
+        <AppBar position="static" sx={{ px: 2 }} >
           <Toolbar disableGutters>
             <FoundationIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
             <Typography
               variant="h6"
               noWrap
               component="a"
-              href="#app-bar-with-responsive-menu"
+              href="/dashboard"
               sx={{
                 mr: 2,
                 display: { xs: 'none', md: 'flex' },
@@ -64,9 +68,9 @@ const Navbar = () => {
             >
               CoreSteps
             </Typography>
-             
+
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {pages.map(({page, linkTo}) => (
+              {pages.map(({ page, linkTo }) => (
                 <Button
                   key={page}
                   onClick={() => navigate(linkTo)}
@@ -97,11 +101,13 @@ const Navbar = () => {
                   horizontal: 'right',
                 }}
                 open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
+              // onClose={() => handleCloseUserMenu}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
+                {settings.map(({ setting, linkTo }) => (
+                  <MenuItem key={setting}
+                    onClick={(event) => handleCloseUserMenu(event, { setting, linkTo })}
+                  >
+                    <Typography textAlign="center" >{setting}</Typography>
                   </MenuItem>
                 ))}
               </Menu>

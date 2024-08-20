@@ -2,7 +2,7 @@ import { Box, Container } from '@mui/material'
 import Navbar from './Navbar'
 import { Outlet } from 'react-router-dom';
 
-const Home = () => {
+export const Home = () => {
   return (
     <>
       <Navbar />
@@ -14,5 +14,3 @@ const Home = () => {
     </>
   )
 }
-
-export default Home
