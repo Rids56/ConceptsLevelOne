@@ -1,11 +1,13 @@
-import { LockClockOutlined } from "@mui/icons-material"
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import { Avatar, Box, Button, Container, Grid, Link, TextField, Typography } from "@mui/material"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { joiResolver } from "@hookform/resolvers/joi"
 import Joi from "joi"
-import { useAppDispatch } from "../redux/hooks"
-import { addUser } from "../redux/Slices/User/userSlice"
-import { useNavigate } from "react-router-dom"
+
+import { useLocation, useNavigate } from "react-router-dom"
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks"
+import { addUser, updateUser } from "../../../redux/Slices/User/userSlice"
+import { useEffect } from 'react';
 
 interface FormData {
   id: number,
@@ -29,22 +31,46 @@ const schema = Joi.object({
     'string.empty': 'Password is required',
     'string.min': 'Password should have at least 6 characters',
   }),
-})
+});
 
-const Register = () => {
+const UserAdd = () => {
+  const history = useLocation();
+  const currentData = history?.state;
+  const userlist = useAppSelector((state) => state.user.users) || [];
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  
+
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: joiResolver(schema),
   });
 
   const handleRegister: SubmitHandler<FormData> = (data: FormData) => {
     const newUser: FormData = data;
-    dispatch(addUser(newUser));
-    navigate('/');
+    const updatedData = {
+      ...newUser,
+      id: currentData?.id,
+    }
+
+    if (currentData?.currentType === 'add') {
+      dispatch(addUser(newUser))
+    } else {
+      dispatch(updateUser(updatedData))
+    }
+    navigate('/dashboard/users');
     reset();
   }
+
+  useEffect(() => {
+    if (currentData?.currentType === 'edit' && currentData?.id && userlist) {
+      const user = userlist?.find((e) => e.id === currentData?.id);
+
+      reset({
+        fullName: user?.fullName,
+        userName: user?.userName,
+        password: user?.password,
+      })
+    }
+  }, []);
 
   return (
     <div className="container">
@@ -58,10 +84,10 @@ const Register = () => {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockClockOutlined />
+            <PersonAddAlt1Icon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign Up
+            {currentData && currentData?.currentType === 'add' ? 'Add new User' : 'Edit User'}
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit(handleRegister)} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
@@ -104,19 +130,28 @@ const Register = () => {
                 <span className="error">{errors.password?.message}</span>
               )}
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign Up
-            </Button>
-            <Grid container justifyContent="flex-end">
+
+            <Grid container>
+              <Grid item xs>
+                <Button
+                  type="submit"
+                  // fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  {(currentData && currentData?.currentType === 'add') ? 'Add User' : 'Submit'}
+                </Button>
+              </Grid>
               <Grid item>
-                <Link href="/" variant="body2">
-                  Already have an account? Sign in
-                </Link>
+                <Button
+                  type="reset"
+                  // fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  onClick={() => navigate('/dashboard/users')}
+                >
+                  Cancel
+                </Button>
               </Grid>
             </Grid>
           </Box>
@@ -126,4 +161,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default UserAdd;

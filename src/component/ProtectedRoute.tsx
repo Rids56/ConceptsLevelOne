@@ -5,8 +5,9 @@ type Props = {
 }
 
 export const ProtectedRoute = (props: Props) => {
-    if (!props?.isAuthenticated) {
-        return <Navigate to="/" replace />;
+    const validUser = props?.isAuthenticated || !!(sessionStorage.getItem('token'));    
+    if (!validUser) {
+        return <Navigate to="/" />;
     }
 
     return <Outlet />;

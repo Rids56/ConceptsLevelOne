@@ -8,6 +8,8 @@ import { CityList } from './Masters/City.tsx/CityList';
 import { StateList } from './Masters/State/StateList';
 import { Home } from './Home';
 import { ProtectedRoute } from './ProtectedRoute';
+import UserAdd from './Masters/User/UserAdd';
+import CountryAdd from './Masters/Country/CountryAdd';
 
 const getAccessToken = () => {
     return sessionStorage.getItem('token');
@@ -40,7 +42,9 @@ export const RedirectTo = [
                 children: [
                     { path: '', element: <Dashboard /> },
                     { path: 'users', element: <UserList /> }, // without leading slashes, making them relative to /dashboard
+                    { path: 'userUpdates', element: <UserAdd /> },
                     { path: 'countries', element: <CountryList /> },
+                    { path: 'countryUpdates', element: <CountryAdd /> },
                     { path: 'states', element: <StateList /> },
                     { path: 'cities', element: <CityList /> },
                 ]

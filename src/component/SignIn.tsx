@@ -46,17 +46,14 @@ const SignIn = () => {
   // console.log('sunmitted data', errors);
   // console.log('Watch on specific var', watch('userName'));  
 
-  const handleFormSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-    // console.log('submitted data', data);
-    await dispatch(getOneUser(data));
+  const handleFormSubmit: SubmitHandler<FormData> = (data: FormData) => {
+    dispatch(getOneUser(data));
 
     const validUser = sessionStorage.getItem('token');
     const users = JSON.parse(sessionStorage.getItem('users') || '[]');
-    // console.log('login dispatched data outer', validUser);
 
     if (!isEmpty(validUser)) {
-      // console.log('login dispatched success', validUser);
-      navigate('/dashboard')
+      navigate('/dashboard');
     } else if (isEmpty(validUser) && isEmpty(users)) {
       return showNotification('error', 'No user found, Create new account')
     } else {

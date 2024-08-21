@@ -2,21 +2,28 @@ import React, { useEffect, useState } from "react";
 import { getToken } from "../../../assets/CommonApi/countryToken";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { fetchCountry } from "../../../redux/Slices/Country/countrySlice";
-import { Box, CircularProgress, Container } from "@mui/material";
+import { Box, Button, CircularProgress, Container } from "@mui/material";
 import TableList from "../../TableList";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
-import { AddCircle, Delete, Edit } from "@mui/icons-material";
+import { Add, AddCircle, Delete, Edit } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+
+interface Column {
+  Header: string;
+  accessor: string;
+  Cell?: () => JSX.Element;
+}
 
 const CountryList: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const { countries, loading, error } = useAppSelector(
     (state) => state.country
   );
-  const [data, setData] = useState([]);
-  const [columns, setColumns] = useState([]);
+  const [columns, setColumns] = useState<Column[]>([]);
 
   const fetchCountryList = async () => {
-    console.log("error", error);
     dispatch(fetchCountry());
   };
 
@@ -28,38 +35,45 @@ const CountryList: React.FC = () => {
   };
 
   useEffect(() => {
-    const primaryColumns = keys(countries?.[0])?.map((e) => ({
-      Header: startCase(kebabCase(e)),
-      accessor: e,
-    }));
+    let columns = [];
 
-    const columns = [
-      ...primaryColumns,
-      {
-        Header: "Action",
-        accessor: "action",
-        Cell: ({ row }) => (
-          <div className="actionIcons">
-            <span>
-              <AddCircle />
-            </span>
-            <span>
-              <Edit />
-            </span>
-            <span>
-              <Delete />
-            </span>
-          </div>
-        ),
-      },
-    ];
+    if (!isEmpty(countries)) {
+      const primaryColumns = keys(countries?.[0])?.map((e) => ({
+        Header: startCase(kebabCase(e)),
+        accessor: e,
+      }));
 
-    setColumns(columns);
-    setData(countries);
+      columns = [
+        ...primaryColumns,
+        {
+          Header: "Action",
+          accessor: "action",
+          Cell: () => (
+            <div className="actionIcons">
+              <span>
+                <Edit />
+              </span>
+              <span>
+                <Delete />
+              </span>
+            </div>
+          ),
+        },
+      ];
+      setColumns(columns);
+    }
   }, [countries, dispatch]);
 
   useEffect(() => {
     const getApiToken = sessionStorage.getItem("apitoken");
+    const master = sessionStorage.getItem("master");
+    const masterObj = JSON.parse(master);
+
+    // Step 3: Access the 'Country' array
+    const getMasterCountry = masterObj?.Country;
+
+    console.log(getMasterCountry);
+    
     if (!getApiToken) {
       fetchToken();
     }
@@ -69,13 +83,22 @@ const CountryList: React.FC = () => {
   return (
     <>
       <Container maxWidth="xl">
-        <h3>Country List</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <h3>Country List</h3>
+          <Button color="success" variant='outlined'
+            onClick={() => navigate('/dashboard/countryUpdates', { state: { currentType: 'add' } })}
+          >
+            <Add />Add New Country
+          </Button>
+        </div>
+
+
         {loading ? (
           <CircularProgress />
         ) : (
           <Box sx={{ width: 1, my: 4 }}>
-            {!isEmpty(data) ? (
-              <TableList columns={columns} data={data} />
+            {!isEmpty(countries) ? (
+              <TableList columns={columns} data={countries} />
             ) : (
               <div>No Data Found</div>
             )}

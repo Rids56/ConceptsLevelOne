@@ -9,10 +9,10 @@ import {
 //worker saga
 function* fetchCountriesSaga() {
   try {
-    const countries = yield call(getCountries);
+    const countries: [] = yield call(getCountries);
     yield put(fetchCountrySuccess(countries));
   } catch (error) {
-    yield put(fetchCountryFailure(error?.message));
+    yield put(fetchCountryFailure(error instanceof Error ? error.message : "Unknown error"));
   }
 }
 

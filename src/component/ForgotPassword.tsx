@@ -4,7 +4,7 @@ import { Avatar, Box, Button, Container, Grid, Link, TextField, Typography } fro
 import Joi from 'joi'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { updateUser } from '../redux/Slices/User/userSlice'
+import { updatePassword } from '../redux/Slices/User/userSlice'
 import { isEmpty } from 'lodash'
 import OpenNotification, { AlertSeverity } from './OpenNotification'
 import { useState } from 'react'
@@ -55,16 +55,14 @@ const ForgotPassword = () => {
         setNotification({ type, visible: true, msg: message });
     };
 
-    const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<FormData>({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
         resolver: joiResolver(schema),
     });
-
-    // console.log('sunmitted error', errors);
 
     const handleConfirmPassword: SubmitHandler<FormData> = (data: FormData) => {
         const userAvailable = existingUsers?.find((e) => e.userName === data.userName) || [];
         if (!isEmpty(userAvailable)) {
-            dispatch(updateUser({ userName: data.userName, password: data.newPassword }));
+            dispatch(updatePassword({ userName: data.userName, password: data.newPassword }));
             navigate('/')
         } else {
             return showNotification('error', 'User not exist with this Username')

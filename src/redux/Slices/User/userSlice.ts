@@ -1,12 +1,12 @@
-import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, current, nanoid, PayloadAction } from "@reduxjs/toolkit";
 
 //types of user contains values
 export interface User {
   id?: number;
   fullName?: string;
   userName?: string;
-  password: string;
-  actions: undefined;
+  password?: string;
+  actions?: undefined;
 }
 
 export interface UserState {
@@ -29,6 +29,7 @@ export const userSlice = createSlice({
         fullName: action.payload.fullName,
         userName: action.payload.userName,
         password: action.payload.password,
+        actions: undefined,
       });
     },
     getOneUser: (state, action: PayloadAction<User>) => {
@@ -43,7 +44,7 @@ export const userSlice = createSlice({
         sessionStorage.removeItem("token");
       }
     },
-    updateUser: (state, action: PayloadAction<User>) => {
+    updatePassword: (state, action: PayloadAction<User>) => {
       const { userName, ...changes } = action.payload;
       const index = state.users.findIndex(
         (user) => user.userName === action.payload.userName
@@ -51,6 +52,18 @@ export const userSlice = createSlice({
       if (index !== -1) {
         state.users[index] = { ...state.users[index], ...changes };
       }
+    },
+    updateUser: (state, action: PayloadAction<User>) => {
+      const { id, ...updatedFields } = action.payload;
+      const index = state.users.findIndex((user) => user.id === id);
+      if (index !== -1) {
+        state.users[index] = { ...state.users[index], ...updatedFields };
+      }
+    },
+    deleteUser: (state, action: PayloadAction<User>) => {
+      const id = action.payload.id;
+      const data = state.users?.filter((user) => user.id != id);
+      state.users = data;
     },
     logoutUser: () => {
       sessionStorage.removeItem("token");
@@ -63,5 +76,5 @@ export const userSlice = createSlice({
 export default userSlice.reducer;
 
 //export actions of slice
-export const { addUser, getOneUser, updateUser, logoutUser } =
+export const { addUser, getOneUser, updatePassword, updateUser, deleteUser, logoutUser } =
   userSlice.actions;
