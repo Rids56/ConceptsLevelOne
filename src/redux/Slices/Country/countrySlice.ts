@@ -38,6 +38,21 @@ export const addMasterData = (value: unknown, key: string) => {
     sessionStorage.setItem("master", JSON.stringify(masterObj));
 }
 
+export const getMasterData = (key: string) => {
+    // Step 1: Retrieve existing 'master' from session storage
+    const master = sessionStorage.getItem(key);
+    let masterObj;
+
+    if (master) {
+        // Parse the existing 'master' object
+        masterObj = JSON.parse(master);
+    } else {
+        // If 'master' does not exist, initialize it as an empty object
+        masterObj = {};
+    }
+    return masterObj;
+}
+
 // define slice with what action to be perform and state to handle
 export const countrySlice = createSlice({
     name: "countries",

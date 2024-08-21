@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getToken } from "../../../assets/CommonApi/countryToken";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { fetchCountry } from "../../../redux/Slices/Country/countrySlice";
+import { fetchCountry, getMasterData } from "../../../redux/Slices/Country/countrySlice";
 import { Box, Button, CircularProgress, Container } from "@mui/material";
 import TableList from "../../TableList";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
@@ -65,14 +65,9 @@ const CountryList: React.FC = () => {
   }, [countries, dispatch]);
 
   useEffect(() => {
-    const getApiToken = sessionStorage.getItem("apitoken");
-    const master = sessionStorage.getItem("master");
-    const masterObj = JSON.parse(master);
-
-    // Step 3: Access the 'Country' array
-    const getMasterCountry = masterObj?.Country;
-
-    console.log(getMasterCountry);
+    const getApiToken = sessionStorage.getItem("apitoken");    
+    const Countries = getMasterData('master')?.Country;
+    if(!isEmpty(Countries)) return;
     
     if (!getApiToken) {
       fetchToken();
