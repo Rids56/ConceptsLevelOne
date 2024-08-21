@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { getToken } from "../../../assets/CommonApi/countryToken";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { fetchCountry, getMasterData } from "../../../redux/Slices/Country/countrySlice";
+import {
+  deleteCountry,
+  fetchCountry,
+  fetchCountrySuccess,
+  getMasterData,
+} from "../../../redux/Slices/Country/countrySlice";
 import { Box, Button, CircularProgress, Container } from "@mui/material";
 import TableList from "../../TableList";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
-import { Add, AddCircle, Delete, Edit } from "@mui/icons-material";
+import { Add, Delete, Edit } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 interface Column {
@@ -17,7 +22,7 @@ interface Column {
 const CountryList: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
+  const Countries = getMasterData("master")?.Country;
   const { countries, loading, error } = useAppSelector(
     (state) => state.country
   );
@@ -48,13 +53,25 @@ const CountryList: React.FC = () => {
         {
           Header: "Action",
           accessor: "action",
-          Cell: () => (
+          Cell: ({ row }) => (
             <div className="actionIcons">
               <span>
-                <Edit />
+                <Edit
+                  style={{ cursor: "pointer" }}
+                  onClick={() =>
+                    navigate("/dashboard/countryUpdates", {
+                      state: { currentType: "edit", id: row.original.id },
+                    })
+                  }
+                />
               </span>
               <span>
-                <Delete />
+                <Delete
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    dispatch(deleteCountry({ id: row.original.id }));
+                  }}
+                />
               </span>
             </div>
           ),
@@ -62,13 +79,15 @@ const CountryList: React.FC = () => {
       ];
       setColumns(columns);
     }
-  }, [countries, dispatch]);
+  }, [countries, Countries, dispatch]);
 
   useEffect(() => {
-    const getApiToken = sessionStorage.getItem("apitoken");    
-    const Countries = getMasterData('master')?.Country;
-    if(!isEmpty(Countries)) return;
-    
+    const getApiToken = sessionStorage.getItem("apitoken");
+    if (!isEmpty(Countries)) {
+      dispatch(fetchCountrySuccess(Countries));
+      return;
+    }
+
     if (!getApiToken) {
       fetchToken();
     }
@@ -78,22 +97,28 @@ const CountryList: React.FC = () => {
   return (
     <>
       <Container maxWidth="xl">
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3>Country List</h3>
-          <Button color="success" variant='outlined'
-            onClick={() => navigate('/dashboard/countryUpdates', { state: { currentType: 'add' } })}
+          <Button
+            color="success"
+            variant="outlined"
+            onClick={() =>
+              navigate("/dashboard/countryUpdates", {
+                state: { currentType: "add" },
+              })
+            }
           >
-            <Add />Add New Country
+            <Add />
+            Add New Country
           </Button>
         </div>
-
 
         {loading ? (
           <CircularProgress />
         ) : (
           <Box sx={{ width: 1, my: 4 }}>
-            {!isEmpty(countries) ? (
-              <TableList columns={columns} data={countries} />
+            {!isEmpty(countries) || !isEmpty(Countries) ? (
+              <TableList columns={columns} data={countries || Countries} />
             ) : (
               <div>No Data Found</div>
             )}
