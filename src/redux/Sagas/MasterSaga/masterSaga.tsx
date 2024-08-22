@@ -1,5 +1,5 @@
 import { call, put, takeLatest } from "redux-saga/effects";
-import { getCountries, getState } from "../../../assets/CommonApi/commonapi";
+import { getCity, getCountries, getState } from "../../../assets/CommonApi/commonapi";
 import {
     fetchCountry,
     fetchCountryFailure,
@@ -45,3 +45,26 @@ export function* watchFetchState() {
     yield takeLatest(fetchState.type, fetchStatesSaga);
 }
 //State End
+
+//City Start
+function* fetchCitySaga(action: ReturnType<typeof fetchState>) {
+    const searchId = action.payload;
+    try {
+        const cities: [] = yield call(getCity, searchId);
+        const data = cities?.map((item: State, index: number) => ({
+            id: index + 1,
+            country_name: searchId,
+            // isApiData: true,
+            ...item,
+        }));
+
+        yield put(fetchStateSuccess(data));
+    } catch (error) {
+        yield put(fetchStateFailure(error instanceof Error ? error.message : "Unknown error"));
+    }
+}
+
+export function* watchFetchCity() {
+    yield takeLatest(fetchState.type, fetchCitySaga);
+}
+//City End
