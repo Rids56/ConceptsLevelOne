@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import {
-  State,
-  deleteState,
-  fetchState,
-  fetchStateSuccess,
-} from "../../../redux/Slices/State/stateSlice";
 import { Box, Button, CircularProgress, Container, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
 import TableList from "../../TableList";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
@@ -13,35 +7,38 @@ import { Add, Delete, Edit } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CellProps, Column } from "react-table";
 import { Country, getMasterData } from "../../../redux/Slices/Country/countrySlice";
+import { City, deleteCity, fetchCity, fetchCitySuccess } from "../../../redux/Slices/City/citySlice";
+import { State } from "../../../redux/Slices/State/stateSlice";
 
 interface Columns {
   Header: string;
   accessor: string;
-  Cell?: ({ row }: CellProps<State>) => JSX.Element;
+  Cell?: ({ row }: CellProps<City>) => JSX.Element;
 }
 
-const StateList: React.FC = () => {
+const CityList: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const history = useLocation();
   const updateHistory = history?.state;
-  const States = getMasterData("master")?.State;
+  const Citys = getMasterData("master")?.City;
   const CountryMaster = getMasterData("master")?.Country;
-  const { states, loading, error } = useAppSelector((state) => state.state);
-  const [columns, setColumns] = useState<Column<State>[]>([]);
+  const StateMaster = getMasterData("master")?.State;
+  const { cities, loading, error } = useAppSelector((state) => state.city);
+  const [columns, setColumns] = useState<Column<City>[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>('')
 
   const handleChange = (event: SelectChangeEvent<typeof selectedCountry>) => {
     setSelectedCountry(event.target.value);
   };
 
-  const fetchStateList = async () => {
-    dispatch(fetchState(selectedCountry));
+  const fetchCityList = async () => {
+    dispatch(fetchCity(selectedCountry));
   };
 
   useEffect(() => {
-    if (!isEmpty(states)) {
-      const primaryColumns = keys(states?.[0])?.map((e) => ({
+    if (!isEmpty(cities)) {
+      const primaryColumns = keys(cities?.[0])?.map((e) => ({
         Header: startCase(kebabCase(e)),
         accessor: e,
       }));
@@ -51,14 +48,14 @@ const StateList: React.FC = () => {
         {
           Header: "Action",
           accessor: "action",
-          Cell: ({ row }: CellProps<State>) => (
+          Cell: ({ row }: CellProps<City>) => (
             <div className="actionIcons">
               <span>
                 <Edit
                   style={{ cursor: "pointer" }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate("/dashboard/stateUpdates", {
+                    navigate("/dashboard/cityUpdates", {
                       state: { currentType: "edit", id: row.original.id, selectedCountry },
                     })
                   }}
@@ -69,7 +66,7 @@ const StateList: React.FC = () => {
                   style={{ cursor: "pointer" }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    dispatch(deleteState({ id: row.original.id }));
+                    dispatch(deleteCity({ id: row.original.id }));
                   }}
                 />
               </span>
@@ -79,27 +76,27 @@ const StateList: React.FC = () => {
       ];
       setColumns(newColumns);
     }
-  }, [states]);
+  }, [cities]);
 
   useEffect(() => {
-    setSelectedCountry(updateHistory?.selectedCountry || 'United States')
+    // setSelectedCountry(updateHistory?.selectedCountry || 'United Citys')
 
-    if (!isEmpty(States)) {
-      dispatch(fetchStateSuccess(States));
+    if (!isEmpty(cities)) {
+      dispatch(fetchCitySuccess(cities));
       return;
     }
 
-    fetchStateList();
+    fetchCityList();
   }, []);
 
   useEffect(() => {
     // updateHistory only contains edit id    
-    if (!isEmpty(States) && updateHistory?.selectedCountry === selectedCountry) {
-      dispatch(fetchStateSuccess(States));
+    if (!isEmpty(Citys) && updateHistory?.selectedCountry === selectedCountry) {
+      dispatch(fetchCitySuccess(Citys));
       return;
     }
 
-    fetchStateList();
+    fetchCityList();
   }, [selectedCountry]);
 
   return (
@@ -107,14 +104,14 @@ const StateList: React.FC = () => {
       <Container maxWidth="xl">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>
-            <h3>State List</h3>
+            <h3>City List</h3>
           </div>
           <div style={{ display: "flex", gap: '5px' }}>
             <FormControl sx={{ width: 300 }}>
               <InputLabel id="demo-multiple-name-label">Country</InputLabel>
               <Select
                 value={selectedCountry}
-                input={<OutlinedInput label="Name" />}
+                input={<OutlinedInput label="Country" />}
                 onChange={handleChange}
                 MenuProps={{
                   PaperProps: {
@@ -137,17 +134,44 @@ const StateList: React.FC = () => {
               </Select>
             </FormControl>
 
+            <FormControl sx={{ width: 300 }}>
+              <InputLabel id="demo-multiple-name-label">State</InputLabel>
+              <Select
+                value={selectedCountry}
+                input={<OutlinedInput label="State" />}
+                onChange={handleChange}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: 50 * 4.5 + 10,
+                      width: 250,
+                      overflow: 'scroll'
+                    },
+                  },
+                }}
+              >
+                {StateMaster?.map((item: State) => (
+                  <MenuItem
+                    key={item.id}
+                    value={item.state_name}
+                  >
+                    {item.state_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <Button
               color="success"
               variant="outlined"
               onClick={() =>
-                navigate("/dashboard/stateUpdates", {
+                navigate("/dashboard/cityUpdates", {
                   state: { currentType: "add" },
                 })
               }
             >
               <Add />
-              Add New State
+              Add New City
             </Button>
           </div>
         </div>
@@ -156,8 +180,8 @@ const StateList: React.FC = () => {
           <CircularProgress />
         ) : (
           <Box sx={{ width: 1, my: 4 }}>
-            {!isEmpty(states) ? (
-              <TableList columns={columns} data={states} />
+            {!isEmpty(cities) ? (
+              <TableList columns={columns} data={cities} />
             ) : (
               <div>No Data Found</div>
             )}
@@ -168,4 +192,4 @@ const StateList: React.FC = () => {
   );
 };
 
-export default StateList;
+export default CityList;

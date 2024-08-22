@@ -34,13 +34,13 @@ const schema = Joi.object({
     "string.max": "Country Name should have at most 50 characters",
   }),
   country_short_name: Joi.string().min(2).max(30).required().messages({
-    "string.empty": "Username is required",
-    "string.min": "Username should have at least 2 characters",
-    "string.max": "Username should have at most 30 characters",
+    "string.empty": "Country Short Name is required",
+    "string.min": "Country Short Name should have at least 2 characters",
+    "string.max": "Country Short Name should have at most 30 characters",
   }),
-  country_phone_code: Joi.string().min(1).required().messages({
-    "string.empty": "Password is required",
-    "string.min": "Password should have at least 1 characters",
+  country_phone_code: Joi.number().min(1).required().messages({
+    "string.empty": "Country Phone code is required",
+    "string.min": "Country Phone code should have at least 1 characters",
   }),
 });
 

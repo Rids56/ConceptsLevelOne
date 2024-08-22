@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getToken } from "../../../assets/CommonApi/countryToken";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
+  Country,
   deleteCountry,
   fetchCountry,
   fetchCountrySuccess,
@@ -12,11 +13,12 @@ import TableList from "../../TableList";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
 import { Add, Delete, Edit } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { CellProps, Column } from "react-table";
 
-interface Column {
+interface Columns {
   Header: string;
   accessor: string;
-  Cell?: () => JSX.Element;
+  Cell?: ({ row }: CellProps<Country>) => JSX.Element;
 }
 
 const CountryList: React.FC = () => {
@@ -26,7 +28,7 @@ const CountryList: React.FC = () => {
   const { countries, loading, error } = useAppSelector(
     (state) => state.country
   );
-  const [columns, setColumns] = useState<Column[]>([]);
+  const [columns, setColumns] = useState<Column<Country>[]>([]);
 
   const fetchCountryList = async () => {
     dispatch(fetchCountry());
@@ -40,35 +42,35 @@ const CountryList: React.FC = () => {
   };
 
   useEffect(() => {
-    let columns = [];
-
     if (!isEmpty(countries)) {
       const primaryColumns = keys(countries?.[0])?.map((e) => ({
         Header: startCase(kebabCase(e)),
         accessor: e,
       }));
 
-      columns = [
+      const columns = [
         ...primaryColumns,
         {
           Header: "Action",
           accessor: "action",
-          Cell: ({ row }) => (
+          Cell: ({ row }: CellProps<Country>) => (
             <div className="actionIcons">
               <span>
                 <Edit
                   style={{ cursor: "pointer" }}
-                  onClick={() =>
+                  onClick={(e) => {
+                    e.stopPropagation();
                     navigate("/dashboard/countryUpdates", {
                       state: { currentType: "edit", id: row.original.id },
                     })
-                  }
+                  }}
                 />
               </span>
               <span>
                 <Delete
                   style={{ cursor: "pointer" }}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     dispatch(deleteCountry({ id: row.original.id }));
                   }}
                 />
@@ -79,18 +81,22 @@ const CountryList: React.FC = () => {
       ];
       setColumns(columns);
     }
-  }, [countries, Countries, dispatch]);
+  }, [countries]); //, Countries, dispatch
 
   useEffect(() => {
-    const getApiToken = sessionStorage.getItem("apitoken");
+    const getApiToken =  sessionStorage.getItem("apitoken");
+    if (!getApiToken) {
+      fetchToken();
+    }
+
     if (!isEmpty(Countries)) {
       dispatch(fetchCountrySuccess(Countries));
       return;
     }
 
-    if (!getApiToken) {
-      fetchToken();
-    }
+    // if (!getApiToken) {
+    //   fetchToken();
+    // }
     fetchCountryList();
   }, []);
 

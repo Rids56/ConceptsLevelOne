@@ -68,6 +68,7 @@ export const userSlice = createSlice({
     logoutUser: () => {
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("apitoken");
+      sessionStorage.removeItem("master");
     },
   },
 });

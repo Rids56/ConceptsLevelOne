@@ -4,12 +4,14 @@ import SignIn from './SignIn';
 import { Dashboard } from './index';
 import { UserList } from './Masters/User/UserList';
 import CountryList from './Masters/Country/CountryList';
-import { CityList } from './Masters/City.tsx/CityList';
-import { StateList } from './Masters/State/StateList';
 import { Home } from './Home';
 import { ProtectedRoute } from './ProtectedRoute';
 import UserAdd from './Masters/User/UserAdd';
 import CountryAdd from './Masters/Country/CountryAdd';
+import StateList from './Masters/State/StateList';
+import StateAdd from './Masters/State/StateAdd';
+import CityList from './Masters/City/CityList';
+import CityAdd from './Masters/City/CityAdd';
 
 const getAccessToken = () => {
     return sessionStorage.getItem('token');
@@ -46,7 +48,9 @@ export const RedirectTo = [
                     { path: 'countries', element: <CountryList /> },
                     { path: 'countryUpdates', element: <CountryAdd /> },
                     { path: 'states', element: <StateList /> },
+                    { path: 'stateUpdates', element: <StateAdd /> },                    
                     { path: 'cities', element: <CityList /> },
+                    { path: 'cityUpdates', element: <CityAdd /> },                    
                 ]
             },
         ],

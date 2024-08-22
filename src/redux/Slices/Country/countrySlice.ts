@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Country {
   id?: number;
-  country_name: string;
-  country_short_name: string;
-  country_phone_code: number;
+  country_name?: string;
+  country_short_name?: string;
+  country_phone_code?: number;
 }
 export interface CountryState {
   countries: Country[];
@@ -103,7 +103,10 @@ export const countrySlice = createSlice({
     deleteCountry: (state, action: PayloadAction<Country>) => {
       const id = action.payload.id;
       const data = state.countries?.filter((item) => item.id != id);
+
+      state.loading = false;
       state.countries = data;
+      addMasterData(state.countries, "Country");
     },
   },
 });
