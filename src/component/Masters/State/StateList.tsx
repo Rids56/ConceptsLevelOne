@@ -6,13 +6,27 @@ import {
   fetchState,
   fetchStateSuccess,
 } from "../../../redux/Slices/State/stateSlice";
-import { Box, Button, CircularProgress, Container, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import TableList from "../../TableList";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
 import { Add, Delete, Edit } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CellProps, Column } from "react-table";
-import { Country, getMasterData } from "../../../redux/Slices/Country/countrySlice";
+import {
+  Country,
+  getMasterData,
+} from "../../../redux/Slices/Country/countrySlice";
 
 interface Columns {
   Header: string;
@@ -25,11 +39,11 @@ const StateList: React.FC = () => {
   const navigate = useNavigate();
   const history = useLocation();
   const updateHistory = history?.state;
-  const States = getMasterData("master")?.State;
+  const StatesMaster = getMasterData("master")?.State;
   const CountryMaster = getMasterData("master")?.Country;
   const { states, loading, error } = useAppSelector((state) => state.state);
   const [columns, setColumns] = useState<Column<State>[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState<string>('')
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
 
   const handleChange = (event: SelectChangeEvent<typeof selectedCountry>) => {
     setSelectedCountry(event.target.value);
@@ -59,8 +73,12 @@ const StateList: React.FC = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate("/dashboard/stateUpdates", {
-                      state: { currentType: "edit", id: row.original.id, selectedCountry },
-                    })
+                      state: {
+                        currentType: "edit",
+                        id: row.original.id,
+                        selectedCountry,
+                      },
+                    });
                   }}
                 />
               </span>
@@ -82,10 +100,10 @@ const StateList: React.FC = () => {
   }, [states]);
 
   useEffect(() => {
-    setSelectedCountry(updateHistory?.selectedCountry || 'United States')
+    setSelectedCountry(updateHistory?.selectedCountry || "United StatesMaster");
 
-    if (!isEmpty(States)) {
-      dispatch(fetchStateSuccess(States));
+    if (!isEmpty(StatesMaster)) {
+      dispatch(fetchStateSuccess(StatesMaster));
       return;
     }
 
@@ -93,9 +111,12 @@ const StateList: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // updateHistory only contains edit id    
-    if (!isEmpty(States) && updateHistory?.selectedCountry === selectedCountry) {
-      dispatch(fetchStateSuccess(States));
+    // updateHistory only contains edit id
+    if (
+      !isEmpty(StatesMaster) &&
+      updateHistory?.selectedCountry === selectedCountry
+    ) {
+      dispatch(fetchStateSuccess(StatesMaster));
       return;
     }
 
@@ -109,7 +130,7 @@ const StateList: React.FC = () => {
           <div>
             <h3>State List</h3>
           </div>
-          <div style={{ display: "flex", gap: '5px' }}>
+          <div style={{ display: "flex", gap: "5px" }}>
             <FormControl sx={{ width: 300 }}>
               <InputLabel id="demo-multiple-name-label">Country</InputLabel>
               <Select
@@ -121,16 +142,13 @@ const StateList: React.FC = () => {
                     style: {
                       maxHeight: 50 * 4.5 + 10,
                       width: 250,
-                      overflow: 'scroll'
+                      overflow: "scroll",
                     },
                   },
                 }}
               >
                 {CountryMaster?.map((item: Country) => (
-                  <MenuItem
-                    key={item.id}
-                    value={item.country_name}
-                  >
+                  <MenuItem key={item.id} value={item.country_name}>
                     {item.country_name}
                   </MenuItem>
                 ))}

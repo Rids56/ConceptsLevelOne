@@ -15,12 +15,13 @@ import Joi from "joi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { useEffect } from "react";
-import { addCity, City, updateCity } from "../../../redux/Slices/City/citySlice";
+import {
+  addCity,
+  City,
+  updateCity,
+} from "../../../redux/Slices/City/citySlice";
 
-interface FormData extends City {
-}
-
-
+interface FormData extends City {}
 
 const CityAdd = () => {
   const history = useLocation();
@@ -35,13 +36,22 @@ const CityAdd = () => {
       "string.min": "City Name should have at least 3 characters",
       "string.max": "City Name should have at most 50 characters",
     }),
-    country_name: updateHistory.currentType === "add" ?
-      Joi.string().min(3).max(50).required().messages({
-        "string.empty": "Country Name is required",
-        "string.min": "Country Name should have at least 3 characters",
-        "string.max": "Country Name should have at most 50 characters",
-      })
-      : Joi.string().optional(),
+    country_name:
+      updateHistory.currentType === "add"
+        ? Joi.string().min(3).max(50).required().messages({
+            "string.empty": "Country Name is required",
+            "string.min": "Country Name should have at least 3 characters",
+            "string.max": "Country Name should have at most 50 characters",
+          })
+        : Joi.string().optional(),
+    state_name:
+      updateHistory.currentType === "add"
+        ? Joi.string().min(3).max(50).required().messages({
+            "string.empty": "State Name is required",
+            "string.min": "State Name should have at least 3 characters",
+            "string.max": "State Name should have at most 50 characters",
+          })
+        : Joi.string().optional(),
   });
 
   const {
@@ -66,10 +76,11 @@ const CityAdd = () => {
     } else {
       dispatch(updateCity(updatedData));
     }
-    navigate("/dashboard/citys", {
+    navigate("/dashboard/cities", {
       state: {
-        selectedCountry: updateHistory?.selectedCountry
-      }
+        selectedCountry: updateHistory?.selectedCountry,
+        selectedState: updateHistory?.selectedState,
+      },
     });
     reset();
   };
@@ -80,6 +91,7 @@ const CityAdd = () => {
       // Set the form data for editing
       reset({
         city_name: data?.city_name,
+        state_name: data?.state_name,
         country_name: data?.country_name,
       });
     }
@@ -111,46 +123,78 @@ const CityAdd = () => {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
+              {updateHistory && updateHistory.currentType === "add" ? (
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    autoFocus
+                    id="country_name"
+                    label="Country Name"
+                    {...register("country_name")}
+                  />
+                </Grid>
+              ) : (
+                <Grid item xs={12}>
+                  <TextField
+                    disabled={true}
+                    fullWidth
+                    autoFocus
+                    id="country_name"
+                    label="Country Name"
+                    {...register("country_name")}
+                  />
+                </Grid>
+              )}
+              {updateHistory &&
+                updateHistory.currentType === "add" &&
+                errors.country_name &&
+                errors.country_name?.message && (
+                  <span className="error">{errors.country_name?.message}</span>
+                )}
+
+              {updateHistory && updateHistory.currentType === "add" ? (
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="state_name"
+                    label="State Name"
+                    {...register("state_name")}
+                  />
+                </Grid>
+              ) : (
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    disabled={true}
+                    fullWidth
+                    id="state_name"
+                    label="State Name"
+                    {...register("state_name")}
+                  />
+                </Grid>
+              )}
+
+              {updateHistory &&
+                updateHistory.currentType === "add" &&
+                errors.state_name &&
+                errors.state_name?.message && (
+                  <span className="error">{errors.state_name?.message}</span>
+                )}
+
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
                   id="city_name"
                   label="City Name"
-                  autoFocus
                   {...register("city_name")}
                 />
               </Grid>
               {errors.city_name && errors.city_name?.message && (
                 <span className="error">{errors.city_name?.message}</span>
               )}
-
-              {(updateHistory && updateHistory.currentType === "add")
-                ? (
-                  <Grid item xs={12}>
-                    <TextField
-                      required
-                      fullWidth
-                      id="country_name"
-                      label="Country Name"
-                      {...register("country_name")}
-                    />
-                  </Grid>
-                ) : (
-                  <Grid item xs={12}>
-                    <TextField
-                      disabled={true}
-                      fullWidth
-                      id="country_name"
-                      label="Country Name"
-                      {...register("country_name")}
-                    />
-                  </Grid>
-                )}
-              {(updateHistory && updateHistory.currentType === "add") && errors.country_name && errors.country_name?.message && (
-                <span className="error">{errors.country_name?.message}</span>
-              )}
-
             </Grid>
             <Grid container>
               <Grid item xs>
@@ -171,11 +215,14 @@ const CityAdd = () => {
                   // fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
-                  onClick={() => navigate("/dashboard/citys", {
-                    state: {
-                      selectedCountry: updateHistory?.selectedCountry
-                    }
-                  })}
+                  onClick={() =>
+                    navigate("/dashboard/cities", {
+                      state: {
+                        selectedCountry: updateHistory?.selectedCountry,
+                        selectedState: updateHistory?.selectedState,
+                      },
+                    })
+                  }
                 >
                   Cancel
                 </Button>

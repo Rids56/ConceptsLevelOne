@@ -24,7 +24,7 @@ interface Columns {
 const CountryList: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const Countries = getMasterData("master")?.Country;
+  const CountryMaster = getMasterData("master")?.Country;
   const { countries, loading, error } = useAppSelector(
     (state) => state.country
   );
@@ -62,7 +62,7 @@ const CountryList: React.FC = () => {
                     e.stopPropagation();
                     navigate("/dashboard/countryUpdates", {
                       state: { currentType: "edit", id: row.original.id },
-                    })
+                    });
                   }}
                 />
               </span>
@@ -81,16 +81,16 @@ const CountryList: React.FC = () => {
       ];
       setColumns(columns);
     }
-  }, [countries]); //, Countries, dispatch
+  }, [countries]); //, CountryMaster, dispatch
 
   useEffect(() => {
-    const getApiToken =  sessionStorage.getItem("apitoken");
+    const getApiToken = sessionStorage.getItem("apitoken");
     if (!getApiToken) {
       fetchToken();
     }
 
-    if (!isEmpty(Countries)) {
-      dispatch(fetchCountrySuccess(Countries));
+    if (!isEmpty(CountryMaster)) {
+      dispatch(fetchCountrySuccess(CountryMaster));
       return;
     }
 
@@ -123,8 +123,8 @@ const CountryList: React.FC = () => {
           <CircularProgress />
         ) : (
           <Box sx={{ width: 1, my: 4 }}>
-            {!isEmpty(countries) || !isEmpty(Countries) ? (
-              <TableList columns={columns} data={countries || Countries} />
+            {!isEmpty(countries) || !isEmpty(CountryMaster) ? (
+              <TableList columns={columns} data={countries || CountryMaster} />
             ) : (
               <div>No Data Found</div>
             )}

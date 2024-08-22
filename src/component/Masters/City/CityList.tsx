@@ -1,39 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { Box, Button, CircularProgress, Container, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import TableList from "../../TableList";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
 import { Add, Delete, Edit } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CellProps, Column } from "react-table";
-import { Country, getMasterData } from "../../../redux/Slices/Country/countrySlice";
-import { City, deleteCity, fetchCity, fetchCitySuccess } from "../../../redux/Slices/City/citySlice";
+import {
+  Country,
+  getMasterData,
+} from "../../../redux/Slices/Country/countrySlice";
+import {
+  City,
+  deleteCity,
+  fetchCity,
+  fetchCitySuccess,
+} from "../../../redux/Slices/City/citySlice";
 import { State } from "../../../redux/Slices/State/stateSlice";
 
-interface Columns {
-  Header: string;
-  accessor: string;
-  Cell?: ({ row }: CellProps<City>) => JSX.Element;
-}
+// interface Columns {
+//   Header: string;
+//   accessor: string;
+//   Cell?: ({ row }: CellProps<City>) => JSX.Element;
+// }
 
 const CityList: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const history = useLocation();
   const updateHistory = history?.state;
-  const Citys = getMasterData("master")?.City;
+  const CityMaster = getMasterData("master")?.City;
   const CountryMaster = getMasterData("master")?.Country;
   const StateMaster = getMasterData("master")?.State;
   const { cities, loading, error } = useAppSelector((state) => state.city);
   const [columns, setColumns] = useState<Column<City>[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState<string>('')
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [selectedState, setSelectedState] = useState<string>("");
 
   const handleChange = (event: SelectChangeEvent<typeof selectedCountry>) => {
-    setSelectedCountry(event.target.value);
+    setSelectedState(event.target.value);
   };
 
   const fetchCityList = async () => {
-    dispatch(fetchCity(selectedCountry));
+    dispatch(
+      fetchCity({ state_name: selectedState, country_name: selectedCountry })
+    );
   };
 
   useEffect(() => {
@@ -56,8 +78,12 @@ const CityList: React.FC = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate("/dashboard/cityUpdates", {
-                      state: { currentType: "edit", id: row.original.id, selectedCountry },
-                    })
+                      state: {
+                        currentType: "edit",
+                        id: row.original.id,
+                        selectedCountry,
+                      },
+                    });
                   }}
                 />
               </span>
@@ -79,10 +105,15 @@ const CityList: React.FC = () => {
   }, [cities]);
 
   useEffect(() => {
-    // setSelectedCountry(updateHistory?.selectedCountry || 'United Citys')
+    setSelectedCountry(
+      updateHistory?.selectedCountry || CountryMaster?.[0]?.country_name
+    );
+    setSelectedState(
+      updateHistory?.selectedState || StateMaster?.[0]?.state_name
+    );
 
-    if (!isEmpty(cities)) {
-      dispatch(fetchCitySuccess(cities));
+    if (!isEmpty(CityMaster)) {
+      dispatch(fetchCitySuccess(CityMaster));
       return;
     }
 
@@ -90,14 +121,13 @@ const CityList: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // updateHistory only contains edit id    
-    if (!isEmpty(Citys) && updateHistory?.selectedCountry === selectedCountry) {
-      dispatch(fetchCitySuccess(Citys));
+    if (!isEmpty(CityMaster)) {
+      dispatch(fetchCitySuccess(CityMaster));
       return;
     }
 
     fetchCityList();
-  }, [selectedCountry]);
+  }, [selectedCountry, selectedState]);
 
   return (
     <>
@@ -106,7 +136,7 @@ const CityList: React.FC = () => {
           <div>
             <h3>City List</h3>
           </div>
-          <div style={{ display: "flex", gap: '5px' }}>
+          <div style={{ display: "flex", gap: "5px" }}>
             <FormControl sx={{ width: 300 }}>
               <InputLabel id="demo-multiple-name-label">Country</InputLabel>
               <Select
@@ -118,16 +148,14 @@ const CityList: React.FC = () => {
                     style: {
                       maxHeight: 50 * 4.5 + 10,
                       width: 250,
-                      overflow: 'scroll'
+                      overflow: "scroll",
                     },
                   },
                 }}
+                // disabled={true}
               >
                 {CountryMaster?.map((item: Country) => (
-                  <MenuItem
-                    key={item.id}
-                    value={item.country_name}
-                  >
+                  <MenuItem key={item.id} value={item.country_name}>
                     {item.country_name}
                   </MenuItem>
                 ))}
@@ -137,7 +165,7 @@ const CityList: React.FC = () => {
             <FormControl sx={{ width: 300 }}>
               <InputLabel id="demo-multiple-name-label">State</InputLabel>
               <Select
-                value={selectedCountry}
+                value={selectedState}
                 input={<OutlinedInput label="State" />}
                 onChange={handleChange}
                 MenuProps={{
@@ -145,16 +173,13 @@ const CityList: React.FC = () => {
                     style: {
                       maxHeight: 50 * 4.5 + 10,
                       width: 250,
-                      overflow: 'scroll'
+                      overflow: "scroll",
                     },
                   },
                 }}
               >
                 {StateMaster?.map((item: State) => (
-                  <MenuItem
-                    key={item.id}
-                    value={item.state_name}
-                  >
+                  <MenuItem key={item.id} value={item.state_name}>
                     {item.state_name}
                   </MenuItem>
                 ))}

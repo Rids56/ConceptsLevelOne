@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 import { addMasterData } from "../Country/countrySlice";
 
 export interface City {
@@ -24,15 +24,15 @@ export const citySlice = createSlice({
   name: "cities",
   initialState,
   reducers: {
-    fetchCity: (state, action: PayloadAction<string>) => {
+    fetchCity: (state, action: PayloadAction<City>) => {
       state.loading = true;
       state.error = null;
     },
     fetchCitySuccess: (state, action: PayloadAction<City[]>) => {
       const data = action.payload;
-      state.loading = false;
       addMasterData(data, "City");
       state.cities = data;
+      state.loading = false;
     },
     fetchCityFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -40,15 +40,13 @@ export const citySlice = createSlice({
     },
     addCity: (state, action: PayloadAction<City>) => {
       state.cities?.push({
-        id: state.cities.length + 1,
+        id: state.cities?.length + 1,
         country_name: action.payload?.country_name,
         state_name: action.payload?.state_name,
         city_name: action.payload?.city_name,
-        // isApiData: false,
       });
-
-      state.loading = false;
       addMasterData(state.cities, "City");
+      state.loading = false;
     },
     updateCity: (state, action: PayloadAction<City>) => {
       const { id, ...updatedFields } = action.payload;
