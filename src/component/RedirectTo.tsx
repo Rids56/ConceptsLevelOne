@@ -12,6 +12,8 @@ import StateList from './Masters/State/StateList';
 import StateAdd from './Masters/State/StateAdd';
 import CityList from './Masters/City/CityList';
 import CityAdd from './Masters/City/CityAdd';
+import ClientList from './Masters/Client/ClientList';
+import ClientListScroll from './Masters/ClientScroll/ClientListScroll';
 
 const getAccessToken = () => {
     return sessionStorage.getItem('token');
@@ -45,6 +47,8 @@ export const RedirectTo = [
                     { path: '', element: <Dashboard /> },
                     { path: 'users', element: <UserList /> }, // without leading slashes, making them relative to /dashboard
                     { path: 'userUpdates', element: <UserAdd /> },
+                    { path: 'clients', element: <ClientList /> },
+                    { path: 'clientScroll', element: <ClientListScroll /> },
                     { path: 'countries', element: <CountryList /> },
                     { path: 'countryUpdates', element: <CountryAdd /> },
                     { path: 'states', element: <StateList /> },

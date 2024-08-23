@@ -1,6 +1,7 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import {
   getCity,
+  getClients,
   getCountries,
   getState,
 } from "../../../assets/CommonApi/commonapi";
@@ -20,6 +21,7 @@ import {
   fetchCityFailure,
   fetchCitySuccess,
 } from "../../Slices/City/citySlice";
+import { ClientState, fetchClient, fetchClientFailure, fetchClientSuccess } from "../../Slices/Client/clientSlice";
 
 // Country start
 // worker saga
@@ -93,3 +95,27 @@ export function* watchFetchCity() {
   yield takeLatest(fetchCity.type, fetchCitySaga);
 }
 //City End
+
+
+//Client Start
+function* fetchClientsSaga(action: ReturnType<typeof fetchClient>) {
+  const state = action.payload;
+  
+  try {
+    const clients: ClientState = yield call(getClients, state);
+    
+    yield put(fetchClientSuccess(clients));
+  } catch (error) {
+    yield put(
+      fetchClientFailure(
+        error instanceof Error ? error.message : "Unknown error"
+      )
+    );
+  }
+}
+
+export function* watchFetchClient() {
+  yield takeLatest(fetchClient.type, fetchClientsSaga);
+}
+//Client End
+

@@ -9,11 +9,12 @@ import {
   getMasterData,
 } from "../../../redux/Slices/Country/countrySlice";
 import { Box, Button, CircularProgress, Container } from "@mui/material";
-import TableList from "../../TableList";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
 import { Add, Delete, Edit } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { CellProps, Column } from "react-table";
+import { isNotEmpty } from "../../utils";
+import TableList from "../../UseReactTable/TableList";
 
 interface Columns {
   Header: string;
@@ -36,7 +37,7 @@ const CountryList: React.FC = () => {
 
   const fetchToken = async () => {
     const token = await getToken();
-    if (token) {
+    if (isNotEmpty(token)) {
       sessionStorage.setItem("apitoken", token?.auth_token);
     }
   };
@@ -85,7 +86,7 @@ const CountryList: React.FC = () => {
 
   useEffect(() => {
     const getApiToken = sessionStorage.getItem("apitoken");
-    if (!getApiToken) {
+    if (isEmpty(getApiToken)) {
       fetchToken();
     }
 
@@ -94,15 +95,12 @@ const CountryList: React.FC = () => {
       return;
     }
 
-    // if (!getApiToken) {
-    //   fetchToken();
-    // }
     fetchCountryList();
   }, []);
 
   return (
     <>
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3>Country List</h3>
           <Button
@@ -122,7 +120,7 @@ const CountryList: React.FC = () => {
         {loading ? (
           <CircularProgress />
         ) : (
-          <Box sx={{ width: 1, my: 4 }}>
+          <Box sx={{ width: 1, my: 2 }} >
             {!isEmpty(countries) || !isEmpty(CountryMaster) ? (
               <TableList columns={columns} data={countries || CountryMaster} />
             ) : (

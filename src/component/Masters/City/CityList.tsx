@@ -12,7 +12,6 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import TableList from "../../TableList";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
 import { Add, Delete, Edit } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -28,6 +27,7 @@ import {
   fetchCitySuccess,
 } from "../../../redux/Slices/City/citySlice";
 import { State } from "../../../redux/Slices/State/stateSlice";
+import TableList from "../../UseReactTable/TableList";
 
 // interface Columns {
 //   Header: string;

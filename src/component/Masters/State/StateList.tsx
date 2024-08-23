@@ -7,6 +7,7 @@ import {
   fetchStateSuccess,
 } from "../../../redux/Slices/State/stateSlice";
 import {
+  Autocomplete,
   Box,
   Button,
   CircularProgress,
@@ -17,16 +18,17 @@ import {
   OutlinedInput,
   Select,
   SelectChangeEvent,
+  TextField,
 } from "@mui/material";
-import TableList from "../../TableList";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
-import { Add, Delete, Edit } from "@mui/icons-material";
+import { Add, Delete, Edit, Label } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CellProps, Column } from "react-table";
 import {
   Country,
   getMasterData,
 } from "../../../redux/Slices/Country/countrySlice";
+import TableList from "../../UseReactTable/TableList";
 
 interface Columns {
   Header: string;
@@ -40,7 +42,7 @@ const StateList: React.FC = () => {
   const history = useLocation();
   const updateHistory = history?.state;
   const StatesMaster = getMasterData("master")?.State;
-  const CountryMaster = getMasterData("master")?.Country;
+  const [CountryMaster, setCountryMaster] = useState(getMasterData("master")?.Country);
   const { states, loading, error } = useAppSelector((state) => state.state);
   const [columns, setColumns] = useState<Column<State>[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
@@ -52,6 +54,16 @@ const StateList: React.FC = () => {
   const fetchStateList = async () => {
     dispatch(fetchState(selectedCountry));
   };
+
+  // useEffect(() => {    
+  //   const masterc = CountryMaster?.map((e: { country_name: any; id: any; }) => ({
+  //     ...e,
+  //     label: e.country_name,
+  //     id: e.id,
+  //   }))  
+  //   setCountryMaster(masterc);
+  // }, [])
+  
 
   useEffect(() => {
     if (!isEmpty(states)) {
@@ -100,7 +112,7 @@ const StateList: React.FC = () => {
   }, [states]);
 
   useEffect(() => {
-    setSelectedCountry(updateHistory?.selectedCountry || "United StatesMaster");
+    setSelectedCountry(updateHistory?.selectedCountry || CountryMaster?.[0]?.country_name);
 
     if (!isEmpty(StatesMaster)) {
       dispatch(fetchStateSuccess(StatesMaster));
@@ -154,6 +166,20 @@ const StateList: React.FC = () => {
                 ))}
               </Select>
             </FormControl>
+
+            {/* <Autocomplete
+              disablePortal
+              options={CountryMaster}
+              sx={{ width: 300 }}
+              renderInput={(params) => <TextField {...params} label="Country" />}
+              renderOption={(props, option: Country) => (
+                <li {...props} key={option?.country_name}>
+                  {option.country_name}
+                </li>
+              )}
+              value={selectedCountry}
+              onChange={handleChange}
+            /> */}
 
             <Button
               color="success"

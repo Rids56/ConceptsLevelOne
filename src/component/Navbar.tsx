@@ -17,6 +17,8 @@ import { logoutUser } from '../redux/Slices/User/userSlice';
 const pages = [
   { page: 'Home', linkTo: '/dashboard' },
   { page: 'Users', linkTo: '/dashboard/users' },
+  { page: 'Client', linkTo: '/dashboard/clients' },
+  { page: 'Client-Scroll', linkTo: '/dashboard/clientScroll' },
   { page: 'Country', linkTo: '/dashboard/countries' },
   { page: 'State', linkTo: '/dashboard/states' },
   { page: 'City', linkTo: '/dashboard/cities' },
@@ -47,7 +49,7 @@ const Navbar = () => {
 
   return (
     <>
-      <Box>
+      <Box sx={{ backgroundColor: 'black'}}>
         <AppBar position="static" sx={{ px: 2 }} >
           <Toolbar disableGutters>
             <FoundationIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />

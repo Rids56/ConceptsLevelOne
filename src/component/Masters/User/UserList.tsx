@@ -1,11 +1,11 @@
 import { Box, Button, Container } from "@mui/material";
-import TableList from "../../TableList";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { isEmpty } from "lodash";
 import { Column } from "react-table";
 import { deleteUser, User } from "../../../redux/Slices/User/userSlice";
 import { Add, Delete, Edit } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import TableList from "../../UseReactTable/TableList";
 
 export const UserList = () => {
   const dispatch = useAppDispatch();
