@@ -43,7 +43,7 @@ const Pagination = (props: Props) => {
       onPageChange={handleChangePage}
       rowsPerPage={rowsPerPage}
       onRowsPerPageChange={handleChangeRowsPerPage}
-      sx={{ color: 'white', fontWeight: '500' }}
+      sx={{ color: 'black', fontWeight: '500' }}
     />
   );
 }

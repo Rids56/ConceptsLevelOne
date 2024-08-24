@@ -13,7 +13,7 @@ const BottomBar = () => {
   return (
     <>
       <Box >
-        <AppBar position="static" sx={{ px: 2 }} >
+        <AppBar position="static" sx={{ bgcolor: '#c6c6c6', mx: 2, }} >
           <Toolbar disableGutters>
             {/* <FoundationIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
             {/* <Typography

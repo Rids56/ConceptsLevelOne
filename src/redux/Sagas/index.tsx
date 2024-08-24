@@ -2,6 +2,7 @@ import { all } from "redux-saga/effects";
 import {
   watchFetchCity,
   watchFetchClient,
+  watchFetchClientScroll,
   watchFetchCountries,
   watchFetchState,
 } from "./MasterSaga/masterSaga";
@@ -13,6 +14,7 @@ function* rootSaga() {
     watchFetchState(),
     watchFetchCity(),
     watchFetchClient(),
+    watchFetchClientScroll(),
   ]);
 }
 

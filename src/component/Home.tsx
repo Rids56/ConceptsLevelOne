@@ -1,12 +1,13 @@
 import { Box, Container } from '@mui/material'
 import Navbar from './Navbar'
 import { Outlet } from 'react-router-dom';
+import ErrorBoundary from '../ErrorBoundary';
 // import BottomBar from './BottomBar';
 
 export const Home = () => {
   return (
     <>
-      <Box 
+      <Box
       // sx={{
       //   display: 'flex',
       //   flexDirection: 'column',
@@ -15,16 +16,18 @@ export const Home = () => {
       >
         <Navbar />
         <Container maxWidth="xl"
-         sx={{
-          // flexGrow: 1,
-          // overflowY: 'auto',
-          my: 4,
-          py: 2,
-          // display: 'flex',
-          // flexDirection: 'column',
-        }}
+          sx={{
+            // flexGrow: 1,
+            // overflowY: 'auto',
+            my: 4,
+            py: 2,
+            // display: 'flex',
+            // flexDirection: 'column',
+          }}
         >
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </Container >
         {/* <BottomBar /> */}
       </Box>

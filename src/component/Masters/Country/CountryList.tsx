@@ -16,11 +16,12 @@ import { CellProps, Column } from "react-table";
 import { isNotEmpty } from "../../utils";
 import TableList from "../../UseReactTable/TableList";
 
-interface Columns {
-  Header: string;
-  accessor: string;
-  Cell?: ({ row }: CellProps<Country>) => JSX.Element;
-}
+export const fetchToken = async () => {
+  const token = await getToken();
+  if (isNotEmpty(token)) {
+    sessionStorage.setItem("apitoken", token?.auth_token);
+  }
+};
 
 const CountryList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -35,12 +36,6 @@ const CountryList: React.FC = () => {
     dispatch(fetchCountry());
   };
 
-  const fetchToken = async () => {
-    const token = await getToken();
-    if (isNotEmpty(token)) {
-      sessionStorage.setItem("apitoken", token?.auth_token);
-    }
-  };
 
   useEffect(() => {
     if (!isEmpty(countries)) {

@@ -30,7 +30,6 @@ const schema = Joi.object({
         .required()
         .valid(Joi.ref('newPassword'))
         // .custom((value, helpers) => {
-        //     console.log('sunmitted error', value, helpers);
         //     if (value === '') {
         //         return helpers.message('Confirm password is required')
         //     }

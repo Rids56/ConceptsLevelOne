@@ -7,7 +7,6 @@ import {
   fetchStateSuccess,
 } from "../../../redux/Slices/State/stateSlice";
 import {
-  Autocomplete,
   Box,
   Button,
   CircularProgress,
@@ -18,10 +17,9 @@ import {
   OutlinedInput,
   Select,
   SelectChangeEvent,
-  TextField,
 } from "@mui/material";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
-import { Add, Delete, Edit, Label } from "@mui/icons-material";
+import { Add, Delete, Edit } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CellProps, Column } from "react-table";
 import {
@@ -30,11 +28,14 @@ import {
 } from "../../../redux/Slices/Country/countrySlice";
 import TableList from "../../UseReactTable/TableList";
 
-interface Columns {
+type Columns = ({
   Header: string;
   accessor: string;
-  Cell?: ({ row }: CellProps<State>) => JSX.Element;
-}
+} | {
+  Header: string;
+  accessor: string;
+  Cell: ({ row }: CellProps<State>) => JSX.Element;
+})[]
 
 const StateList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -43,9 +44,11 @@ const StateList: React.FC = () => {
   const updateHistory = history?.state;
   const StatesMaster = getMasterData("master")?.State;
   const [CountryMaster, setCountryMaster] = useState(getMasterData("master")?.Country);
-  const { states, loading, error } = useAppSelector((state) => state.state);
-  const [columns, setColumns] = useState<Column<State>[]>([]);
+  const { states, loading } = useAppSelector((state) => state.state);
+  const [columns, setColumns] = useState<Columns>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
+
+
 
   const handleChange = (event: SelectChangeEvent<typeof selectedCountry>) => {
     setSelectedCountry(event.target.value);
@@ -55,16 +58,6 @@ const StateList: React.FC = () => {
     dispatch(fetchState(selectedCountry));
   };
 
-  // useEffect(() => {    
-  //   const masterc = CountryMaster?.map((e: { country_name: any; id: any; }) => ({
-  //     ...e,
-  //     label: e.country_name,
-  //     id: e.id,
-  //   }))  
-  //   setCountryMaster(masterc);
-  // }, [])
-  
-
   useEffect(() => {
     if (!isEmpty(states)) {
       const primaryColumns = keys(states?.[0])?.map((e) => ({
@@ -72,7 +65,7 @@ const StateList: React.FC = () => {
         accessor: e,
       }));
 
-      const newColumns = [
+      const newColumns: Columns = [
         ...primaryColumns,
         {
           Header: "Action",

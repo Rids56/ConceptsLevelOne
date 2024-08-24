@@ -7,7 +7,7 @@ import {
 } from "../../../redux/Slices/Client/clientSlice";
 import { Box, CircularProgress, Container } from "@mui/material";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
-import { CellProps, Column } from "react-table";
+import { Column } from "react-table";
 import TableList from "../../UseReactTable/TableList";
 import BottomBar from "../../BottomBar";
 

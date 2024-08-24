@@ -22,6 +22,7 @@ import {
   fetchCitySuccess,
 } from "../../Slices/City/citySlice";
 import { ClientState, fetchClient, fetchClientFailure, fetchClientSuccess } from "../../Slices/Client/clientSlice";
+import { ClientScrollState, fetchClientScrollFailure, fetchClientScrollSuccess, fetchClientStart } from "../../Slices/Client/clientScrollSlice";
 
 // Country start
 // worker saga
@@ -119,3 +120,23 @@ export function* watchFetchClient() {
 }
 //Client End
 
+//ClientScroll Start
+function* fetchClientScrollSaga(action: ReturnType<typeof fetchClientStart>) {
+  const state = action.payload;  
+  try {
+    const clients: ClientScrollState = yield call(getClients, state);
+    
+    yield put(fetchClientScrollSuccess(clients));
+  } catch (error) {
+    yield put(
+      fetchClientScrollFailure(
+        error instanceof Error ? error.message : "Unknown error"
+      )
+    );
+  }
+}
+
+export function* watchFetchClientScroll() {
+  yield takeLatest(fetchClientStart.type, fetchClientScrollSaga);
+}
+//ClientScroll End

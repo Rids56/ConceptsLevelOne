@@ -1,5 +1,7 @@
-import { useTable, Column } from 'react-table';
+import { useTable, useSortBy, Column } from 'react-table';
 import '../../assets/styles/tablestyle.less'
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 // Define the props for the Table component
 interface TableListProps<T extends object> {
@@ -16,7 +18,7 @@ const TableList = <T extends object>({ columns, data }: TableListProps<T>) => {
     headerGroups,
     rows,
     prepareRow,
-  } = useTable<T>({ columns, data });
+  } = useTable<T>({ columns, data }, useSortBy);
 
   return (
     <>
@@ -26,10 +28,20 @@ const TableList = <T extends object>({ columns, data }: TableListProps<T>) => {
             <tr {...headerGroup.getHeaderGroupProps()} key={headerGroupIndex}>
               {headerGroup.headers.map(column => (
                 <th
-                  {...column.getHeaderProps()}
+                  {...column.getHeaderProps(column.getSortByToggleProps())}
                   key={column.id}
                 >
+                  {/* {console.log('column',column, column?.isSorted, column?.isSortedDesc)} */}
                   {column.render('Header')}
+                  <span>
+                    {column?.isSorted ?
+                      (column?.isSortedDesc ? (
+                        <ArrowDropUpIcon />
+                      ) : (
+                        <ArrowDropDownIcon />
+                      ))
+                      : ""}
+                  </span>
                 </th>
               ))}
             </tr>

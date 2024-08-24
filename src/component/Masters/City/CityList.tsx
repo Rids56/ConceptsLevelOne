@@ -18,16 +18,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { CellProps, Column } from "react-table";
 import {
   Country,
+  fetchCountry,
   getMasterData,
 } from "../../../redux/Slices/Country/countrySlice";
 import {
   City,
   deleteCity,
   fetchCity,
-  fetchCitySuccess,
 } from "../../../redux/Slices/City/citySlice";
-import { State } from "../../../redux/Slices/State/stateSlice";
+import { fetchState, State } from "../../../redux/Slices/State/stateSlice";
 import TableList from "../../UseReactTable/TableList";
+import { fetchToken } from "../Country/CountryList";
 
 // interface Columns {
 //   Header: string;
@@ -40,23 +41,46 @@ const CityList: React.FC = () => {
   const navigate = useNavigate();
   const history = useLocation();
   const updateHistory = history?.state;
-  const CityMaster = getMasterData("master")?.City;
-  const CountryMaster = getMasterData("master")?.Country;
-  const StateMaster = getMasterData("master")?.State;
+  const CountryMaster = getMasterData("master")?.Country || [];
+  const StateMaster = getMasterData("master")?.State || [];
   const { cities, loading, error } = useAppSelector((state) => state.city);
+  const { states } = useAppSelector((state) => state.state);
   const [columns, setColumns] = useState<Column<City>[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedState, setSelectedState] = useState<string>("");
 
-  const handleChange = (event: SelectChangeEvent<typeof selectedCountry>) => {
-    setSelectedState(event.target.value);
-  };
+  useEffect(() => {
+    console.log('basic', updateHistory);
+    
+    const getApiToken = sessionStorage.getItem("apitoken");
+    if (isEmpty(getApiToken)) {
+      fetchToken();
+    }
 
-  const fetchCityList = async () => {
-    dispatch(
-      fetchCity({ state_name: selectedState, country_name: selectedCountry })
-    );
-  };
+    if (isEmpty(CountryMaster)) {
+      dispatch(fetchCountry());
+    } else if (isEmpty(StateMaster)) {
+      setSelectedCountry(CountryMaster?.[0]?.country_name);
+      dispatch(fetchState(CountryMaster?.[0]?.country_name));
+    }
+
+    setSelectedCountry(CountryMaster?.[0]?.country_name);
+    setSelectedState(StateMaster?.[0]?.state_name);
+
+    fetchCityList();
+
+  }, [])
+
+  useEffect(() => {
+    setSelectedState(StateMaster?.[0]?.state_name);
+  }, [states])  
+
+  useEffect(() => {
+    // if(updateHistory?.selectedCountry === selectedCountry || updateHistory?.selectedState === selectedState) return;
+    if(updateHistory?.selectedState === selectedState) return;
+      
+    fetchCityList();
+  }, [selectedState]);
 
   useEffect(() => {
     if (!isEmpty(cities)) {
@@ -81,7 +105,7 @@ const CityList: React.FC = () => {
                       state: {
                         currentType: "edit",
                         id: row.original.id,
-                        selectedCountry,
+                        selectedCountry, selectedState
                       },
                     });
                   }}
@@ -104,30 +128,20 @@ const CityList: React.FC = () => {
     }
   }, [cities]);
 
-  useEffect(() => {
-    setSelectedCountry(
-      updateHistory?.selectedCountry || CountryMaster?.[0]?.country_name
+  const handleChangeState = (event: SelectChangeEvent<typeof selectedState>) => {
+    setSelectedState(event.target.value);
+  };
+
+  const handleChangeCountry = (event: SelectChangeEvent<typeof selectedCountry>) => {
+    setSelectedCountry(event.target.value);
+    dispatch(fetchState(event.target.value));
+  };
+
+  const fetchCityList = async () => {
+    dispatch(
+      fetchCity({ state_name: selectedState, country_name: selectedCountry })
     );
-    setSelectedState(
-      updateHistory?.selectedState || StateMaster?.[0]?.state_name
-    );
-
-    if (!isEmpty(CityMaster)) {
-      dispatch(fetchCitySuccess(CityMaster));
-      return;
-    }
-
-    fetchCityList();
-  }, []);
-
-  useEffect(() => {
-    if (!isEmpty(CityMaster)) {
-      dispatch(fetchCitySuccess(CityMaster));
-      return;
-    }
-
-    fetchCityList();
-  }, [selectedCountry, selectedState]);
+  };
 
   return (
     <>
@@ -142,7 +156,7 @@ const CityList: React.FC = () => {
               <Select
                 value={selectedCountry}
                 input={<OutlinedInput label="Country" />}
-                onChange={handleChange}
+                onChange={handleChangeCountry}
                 MenuProps={{
                   PaperProps: {
                     style: {
@@ -152,7 +166,6 @@ const CityList: React.FC = () => {
                     },
                   },
                 }}
-                // disabled={true}
               >
                 {CountryMaster?.map((item: Country) => (
                   <MenuItem key={item.id} value={item.country_name}>
@@ -167,7 +180,7 @@ const CityList: React.FC = () => {
               <Select
                 value={selectedState}
                 input={<OutlinedInput label="State" />}
-                onChange={handleChange}
+                onChange={handleChangeState}
                 MenuProps={{
                   PaperProps: {
                     style: {
@@ -191,7 +204,7 @@ const CityList: React.FC = () => {
               variant="outlined"
               onClick={() =>
                 navigate("/dashboard/cityUpdates", {
-                  state: { currentType: "add" },
+                  state: { currentType: "add", selectedCountry, selectedState },
                 })
               }
             >
