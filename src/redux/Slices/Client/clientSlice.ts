@@ -1,4 +1,4 @@
-import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { addMasterData } from "../Country/countrySlice";
 
 export interface Client {
@@ -47,7 +47,7 @@ export const clientSlice = createSlice({
     fetchClientSuccess: (state, action: PayloadAction<ClientState>) => {
       const response = action.payload;
 
-      const data = response?.users?.map((item: Client, index: number) => ({
+      const data = response?.users?.map((item: Client) => ({
         id: item.id,
         firstName: item.firstName,
         maidenName: item.maidenName,
@@ -66,40 +66,7 @@ export const clientSlice = createSlice({
     fetchClientFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
-    },  
-    // addClient: (state, action: PayloadAction<Client>) => {
-    //   state.clients?.push({
-    //     id: state.clients.length + 1,
-    //     country_name: action.payload?.country_name,
-    //     country_short_name: action.payload.country_short_name,
-    //     country_phone_code: action.payload.country_phone_code,
-    //   });
-
-    //   state.loading = false;
-    //   addMasterData(state.clients, "Client");
-    // },
-    // updateClient: (state, action: PayloadAction<Client>) => {
-    //   const { id, ...updatedFields } = action.payload;
-
-    //   const index = state.clients.findIndex((item) => item.id === id);
-    //   if (index !== -1) {
-    //     state.clients[index] = {
-    //       ...state.clients[index],
-    //       ...updatedFields,
-    //     };
-
-    //     state.loading = false;
-    //     addMasterData(state.clients, "Client");
-    //   }
-    // },
-    // deleteClient: (state, action: PayloadAction<Client>) => {
-    //   const id = action.payload.id;
-    //   const data = state.clients?.filter((item) => item.id != id);
-
-    //   state.loading = false;
-    //   state.clients = data;
-    //   addMasterData(state.clients, "Client");
-    // },
+    },
   },
 });
 
@@ -107,11 +74,5 @@ export const clientSlice = createSlice({
 export default clientSlice.reducer;
 
 //export actions of slice
-export const {
-  fetchClient,
-  fetchClientSuccess,
-  fetchClientFailure,
-  // addClient,
-  // updateClient,
-  // deleteClient,
-} = clientSlice.actions;
+export const { fetchClient, fetchClientSuccess, fetchClientFailure } =
+  clientSlice.actions;

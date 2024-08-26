@@ -4,7 +4,10 @@ import { Box, CircularProgress, Container } from "@mui/material";
 import { isEmpty, kebabCase, keys, startCase } from "lodash";
 import { Column } from "react-table";
 import TableList from "../../UseReactTable/TableList";
-import { ClientScroll, fetchClientStart } from "../../../redux/Slices/Client/clientScrollSlice";
+import {
+  ClientScroll,
+  fetchClientStart,
+} from "../../../redux/Slices/Client/clientScrollSlice";
 
 const ClientListScroll: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -18,7 +21,7 @@ const ClientListScroll: React.FC = () => {
   };
 
   useEffect(() => {
-    (total === 0) && fetchClientList(0);
+    total === 0 && fetchClientList(0);
   }, []);
 
   useEffect(() => {
@@ -35,7 +38,9 @@ const ClientListScroll: React.FC = () => {
   //Infinite scroll start
   const handleScroll = () => {
     if (
-      (window.innerHeight + window.scrollY >= document.body.scrollHeight) && !loading && (clientscroll.length < total)
+      window.innerHeight + window.scrollY >= document.body.scrollHeight &&
+      !loading &&
+      clientscroll.length < total
     ) {
       fetchClientList(skip + limit);
     }
@@ -45,29 +50,38 @@ const ClientListScroll: React.FC = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [clientscroll, loading, skip, limit, total]);
-   //Infinite scroll end 
+  //Infinite scroll end
 
   return (
     <>
-      <Container maxWidth="xl" >
+      <Container maxWidth="xl">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3>Client List</h3>
         </div>
 
         {loading && (
-          <Box sx={{ width: 'auto', display: 'flex', justifyContent: 'center' }}>
+          <Box
+            sx={{ width: "auto", display: "flex", justifyContent: "center" }}
+          >
             <CircularProgress color="error" />
             <CircularProgress color="warning" />
             <CircularProgress color="success" />
           </Box>
         )}
 
-        <Box sx={{ width: 1, my: 2 }} >
+        <Box sx={{ width: 1, my: 2 }}>
           {!isEmpty(clientscroll) ? (
             <>
               <TableList columns={columns} data={clientscroll} />
               {loading && (
-                <Box sx={{ width: 'auto', display: 'flex', justifyContent: 'start', my: 2 }}>
+                <Box
+                  sx={{
+                    width: "auto",
+                    display: "flex",
+                    justifyContent: "start",
+                    my: 2,
+                  }}
+                >
                   <h4>Fetching data .........</h4>
                   <CircularProgress color="error" />
                   <CircularProgress color="warning" />
@@ -76,9 +90,7 @@ const ClientListScroll: React.FC = () => {
               )}
             </>
           ) : (
-            <>
-              {!loading && (<div>No Data Found</div>)}
-            </>
+            <>{!loading && <div>No Data Found</div>}</>
           )}
         </Box>
       </Container>
