@@ -1,7 +1,7 @@
-import { Box, Container } from '@mui/material'
-import Navbar from './Navbar'
-import { Outlet } from 'react-router-dom';
-import ErrorBoundary from '../ErrorBoundary';
+import { Box, Container } from "@mui/material";
+import Navbar from "./Navbar";
+import { Outlet } from "react-router-dom";
+import ErrorBoundary from "../ErrorBoundary";
 // import BottomBar from './BottomBar';
 
 export const Home = () => {
@@ -15,7 +15,8 @@ export const Home = () => {
       // }}
       >
         <Navbar />
-        <Container maxWidth="xl"
+        <Container
+          maxWidth="xl"
           sx={{
             // flexGrow: 1,
             // overflowY: 'auto',
@@ -28,9 +29,9 @@ export const Home = () => {
           <ErrorBoundary>
             <Outlet />
           </ErrorBoundary>
-        </Container >
+        </Container>
         {/* <BottomBar /> */}
       </Box>
     </>
-  )
-}
+  );
+};
