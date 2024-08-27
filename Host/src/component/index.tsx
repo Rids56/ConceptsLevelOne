@@ -1,33 +1,37 @@
 import { Box } from "@mui/material";
 import React, { Suspense, useEffect, useState } from "react";
-import loadRemoteModule from "@originjs/vite-plugin-federation";
 
 // const RemoteComponent = lazy(() => import("mfe/MFE"));
-const MyComponent = React.lazy(() => import("mfe/MFE"));
 
 export const Dashboard = () => {
-  const [componentSet, setComponentSet] = useState(null);
-
-  const RemoteComponent = async () => {
-    try {
-      console.log("Loading remote module...");
-
-      const appModule = loadRemoteModule({
-        remoteName: "mfe",
-        exposedModule: "./MFE",
-      });
-
-      console.log("Remote module loaded successfully", appModule);
-      setComponentSet(appModule.default);
-      return appModule.default;
-    } catch (error) {
-      return console.error("Error loading remote module:", error);
-    }
-  };
+  const [RemoteComponent, setRemoteComponent] = useState<React.ComponentType | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("updated", componentSet);
-  }, [componentSet]);
+    const loadComponent = async () => {
+      try {
+        console.log("Loading remote module...");
+
+        // Dynamically import the remote module
+        const appModule = await import("mfe/MFE");
+
+        console.log("Remote module loaded successfully", appModule);
+
+
+        if (!appModule || !appModule.default) {
+          throw new Error("Failed to load the remote module.");
+        }
+
+        console.log("Remote module loaded successfully", appModule);
+        setRemoteComponent(() => appModule.default);
+      } catch (err) {
+        console.error("Error loading remote module:", err);
+        setError(err.message || "Unknown error occurred");
+      }
+    };
+
+    loadComponent();
+  }, []);
 
   return (
     <>
@@ -53,26 +57,7 @@ export const Dashboard = () => {
         }}
       >
         <Suspense fallback={<div>Loading...</div>}>
-          {componentSet ? (
-            <RemoteComponent />
-          ) : (
-            `Failed to Load,${componentSet} `
-          )}
-        </Suspense>
-      </Box>
-
-      <Box
-        component="section"
-        sx={{
-          my: 3,
-          p: 2,
-          border: "2px solid green",
-          textAlign: "center",
-          borderRadius: "5px",
-        }}
-      >
-        <Suspense fallback={<div>Loading...</div>}>
-          {componentSet ? <MyComponent /> : `Failed to Load 2,${componentSet} `}
+          {RemoteComponent ? <RemoteComponent /> : `Failed to Load`}
         </Suspense>
       </Box>
     </>
