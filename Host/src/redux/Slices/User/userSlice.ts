@@ -73,9 +73,9 @@ export const userSlice = createSlice({
   },
 });
 
+//export actions of slice
+export const { addUser, getOneUser, updatePassword, updateUser, deleteUser, logoutUser } = userSlice.actions;
+
 //export reducers of slice
 export default userSlice.reducer;
 
-//export actions of slice
-export const { addUser, getOneUser, updatePassword, updateUser, deleteUser, logoutUser } =
-  userSlice.actions;

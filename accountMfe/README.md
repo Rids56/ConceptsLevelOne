@@ -48,3 +48,7 @@ export default tseslint.config({
   },
 })
 ```
+
+
+
+NOTE: *** In remote app we have to run app --> yarn build & yarn serve

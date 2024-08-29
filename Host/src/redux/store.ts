@@ -6,6 +6,19 @@ import rootReducer from "./Slices";
 
 const sagaMiddleware = createSagaMiddleware();
 
+// //normal store 
+// import { configureStore } from '@reduxjs/toolkit';
+// import counterReducer from '../features/counter/counterSlice';
+
+// const store = configureStore({
+//   reducer: {
+//     counter: counterReducer,
+//   },
+// });
+
+// export default store;
+// //normal store 
+
 // created store which contains reducers
 // reducers that hanlde events dispatch by redux store
 export const store = configureStore(

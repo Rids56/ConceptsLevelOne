@@ -50,8 +50,6 @@ const CityList: React.FC = () => {
   const [selectedState, setSelectedState] = useState<string>("");
 
   useEffect(() => {
-    console.log('basic', updateHistory);
-    
     const getApiToken = sessionStorage.getItem("apitoken");
     if (isEmpty(getApiToken)) {
       fetchToken();

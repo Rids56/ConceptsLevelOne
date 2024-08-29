@@ -31,7 +31,6 @@ const TableList = <T extends object>({ columns, data }: TableListProps<T>) => {
                   {...column.getHeaderProps(column.getSortByToggleProps())}
                   key={column.id}
                 >
-                  {/* {console.log('column',column, column?.isSorted, column?.isSortedDesc)} */}
                   {column.render('Header')}
                   <span>
                     {column?.isSorted ?

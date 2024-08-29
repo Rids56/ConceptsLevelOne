@@ -2,7 +2,11 @@ import React from "react";
 
 const MFE: React.FC = () => {
   return (
-    <div>********* MFE 1 **********</div>
+    <>
+      <div>
+        ********* MFE 1 **********
+      </div>
+    </>
   );
 };
 
