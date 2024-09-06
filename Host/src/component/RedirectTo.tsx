@@ -14,6 +14,8 @@ import CityList from './Masters/City/CityList';
 import CityAdd from './Masters/City/CityAdd';
 import ClientList from './Masters/Client/ClientList';
 import ClientListScroll from './Masters/ClientScroll/ClientListScroll';
+import Table from './Masters/TanstackExample/Table';
+
 
 const getAccessToken = () => {
     return sessionStorage.getItem('token');
@@ -55,6 +57,7 @@ export const RedirectTo = [
                     { path: 'stateUpdates', element: <StateAdd /> },                    
                     { path: 'cities', element: <CityList /> },
                     { path: 'cityUpdates', element: <CityAdd /> },                    
+                    { path: 'tanstackTable', element: <Table /> },                    
                 ]
             },
         ],

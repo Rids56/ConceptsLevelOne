@@ -22,6 +22,7 @@ const pages = [
   { page: "Country", linkTo: "/dashboard/countries" },
   { page: "State", linkTo: "/dashboard/states" },
   { page: "City", linkTo: "/dashboard/cities" },
+  { page: "Table", linkTo: "/dashboard/tanstackTable" },
 ];
 const settings = [
   { setting: "Account", linkTo: "/dashboard" },
